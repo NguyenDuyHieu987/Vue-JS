@@ -12,17 +12,37 @@
       <span v-else>red</span>
     </button>
 
-    <div>
+    <div style="margin-top: 20px">
+      <h2>{{ titleTask }}</h2>
       <input type="text" v-model="newTask" />
       <button @click="addTask()">Add</button>
       <!-- <div v-for="(task, index) in tasks" :key="index">
         <span :class="{ done: task.done }"> {{ task.name }}</span>
         <input type="checkbox" v-model="task.done" />
       </div> -->
-      <Task v-for="(task, index) in tasks" :key="index" :task="task" />
+      <Task
+        v-for="(task, index) in tasks"
+        :key="index"
+        :task="task"
+        @edit="
+          (task) => {
+            titleTask = task;
+          }
+        "
+      >
+        <template v-slot:header>
+          <p>Header Task</p>
+        </template>
+        <p>Body Task</p>
+        <template v-slot:footer>
+          <button @click="tasks.splice(index, 1)">Delete Task</button>
+        </template>
+      </Task>
     </div>
 
-    <router-link to="/tag">TagMultipleSelect</router-link>
+    <div style="margin-top: 20px">
+      <router-link to="/tag">TagMultipleSelect</router-link>
+    </div>
 
     <hr />
     <TagMultipleSelect />
@@ -33,7 +53,7 @@
     </button>
     <button @click="totalMoney -= 100000">Minus</button>
 
-    <hr />
+    <!-- <hr />
     <div class="list-movie">
       <div v-for="(item, index) in dataImg" :key="index" class="item-movie">
         <img
@@ -42,10 +62,10 @@
           class="img-poster"
         />
       </div>
-    </div>
+    </div> -->
 
     <div>
-      <h1>composition</h1>
+      <h1>Composition</h1>
       <p>{{ firstName }}</p>
       <p>{{ profile.age }}</p>
       <p>{{ profile.address }}</p>
@@ -60,6 +80,10 @@
         <li v-for="(car, index) in carRender" :key="index">{{ car }}</li>
       </ul>
     </div>
+
+    <teleport to="body">
+      <h3>Teleport to tag body</h3>
+    </teleport>
   </div>
 </template>
 
@@ -74,6 +98,10 @@ export default {
   props: {
     msg: String,
   },
+  components: {
+    Task,
+    TagMultipleSelect,
+  },
   setup() {
     const firstName = ref('Nguyễn Duy Hiếu');
     const isChangeName = ref(false);
@@ -81,6 +109,7 @@ export default {
     const listCar = reactive(['Porsche', 'Lamborgini', 'bulgatti', 'nissan']);
     const textInput = ref('');
     const carRender = computed(() =>
+      // Tính toán và chả ra dữ liệu
       listCar.filter((car) =>
         car.toLowerCase().includes(textInput.value.toLowerCase())
       )
@@ -94,11 +123,11 @@ export default {
         )
         .then((movieRespone) => {
           dataImg.value = movieRespone.data.results;
-          console.log(dataImg.value);
         });
     })();
 
     watchEffect(() => {
+      // Tính toán nhưng không chả ra dữ liệu
       if (textInput.value) {
         console.log('ggg');
       }
@@ -143,6 +172,7 @@ export default {
       tasks: [],
       totalMoney: 1000000,
       data: [],
+      titleTask: 'List Task',
     };
   },
   methods: {
@@ -154,7 +184,7 @@ export default {
     },
   },
   watch: {
-    newTask: function (newVal, old) {
+    newTask(newVal, old) {
       console.log('old: ', old);
       console.log('new: ', newVal);
     },
@@ -208,15 +238,14 @@ export default {
       )
       .then((movieRespone) => {
         this.data = this.data.concat(movieRespone.data.results);
-        console.log(this.data);
       });
+  },
+  beforeMount() {
+    console.log(document.querySelector('p'));
   },
   mounted() {
     // call api
-  },
-  components: {
-    Task,
-    TagMultipleSelect,
+    console.log(document.querySelector('p'));
   },
 };
 </script>

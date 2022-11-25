@@ -1,7 +1,11 @@
 <template>
   <div class="task">
+    <slot name="header"> </slot>
     <span :class="{ done: taskData.done }"> {{ taskData.name }}</span>
     <input type="checkbox" v-model="taskData.done" />
+    <slot />
+    <slot name="footer"> </slot>
+    <button style="margin-left: 20px" @click="onEdit">Edit</button>
   </div>
 </template>
 
@@ -18,6 +22,11 @@ export default {
     return {
       taskData: this.task,
     };
+  },
+  methods: {
+    onEdit() {
+      this.$emit('edit', this.task);
+    },
   },
 };
 </script>
